@@ -79,7 +79,7 @@ static void SystemClock_Config(void);
 static void Error_Handler(void);
 
 /* Private functions ---------------------------------------------------------*/
-
+static GPIO_InitTypeDef GPIO_InitStruct ;
 /**
   * @brief  Main program
   * @param  None
@@ -88,6 +88,15 @@ static void Error_Handler(void);
 int main(void)
 {
 
+  /* STM32F4xx HAL library initialization:
+       - Configure the Flash prefetch, Flash preread and Buffer caches
+       - Systick timer is configured by default as source of time base, but user 
+             can eventually implement his proper time base source (a general purpose 
+             timer for example or other time source), keeping in mind that Time base 
+             duration should be kept 1ms since PPP_TIMEOUT_VALUEs are defined and 
+             handled in milliseconds basis.
+       - Low Level Initialization
+     */
   HAL_Init();
 
   /* Configure the system clock to 168 MHz */
@@ -95,11 +104,18 @@ int main(void)
   SystemCoreClockUpdate();
 
   /* Add your application code here*/
-  
   __HAL_RCC_GPIOB_CLK_ENABLE () ;
-  
-  GPIO_InitStruct . Mode = GPIO_MODE_OUTPUT_PP; 
-  GPIO_InitStruct . Pull = GPIO_NOPULL;
+
+#ifdef RTE_CMSIS_RTOS2
+  /* Initialize CMSIS-RTOS2 */
+  osKernelInitialize ();
+
+  /* Create thread functions that start executing, 
+  Example: osThreadNew(app_main, NULL, NULL); */
+
+  /* Start thread execution */
+  osKernelStart();
+#endif
 
   /* Infinite loop */
   while (1)
