@@ -81,6 +81,28 @@ static void Error_Handler(void);
 /* Private functions ---------------------------------------------------------*/
 
 static GPIO_InitTypeDef GPIO_InitStruct;
+static uint32_t delay_LD1;
+static uint32_t delay_LD2;
+static uint32_t delay_LD3;
+
+//Implementacion de interrupciones
+void EXTI15_10_IRQHandler(void){
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13); //Limpia flag de la interrupcion y llama a CallBack de Hal
+}
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+  
+  if(GPIO_Pin == GPIO_PIN_13){
+    if(delay_LD1 == 1000){
+      delay_LD1  = 500;
+    } else if (delay_LD1 == 500){
+      delay_LD1 = 250;
+    } else{
+        delay_LD1 = 1000;
+    }
+  }
+  delay_LD2 = delay_LD1/2;
+  delay_LD3 = delay_LD1/4;
+}
 /**
   * @brief  Main program
   * @param  None
@@ -105,9 +127,11 @@ int main(void)
   SystemCoreClockUpdate();
 
   /* Add your application code here*/
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
+  //Activa reloj del puerto B y configura pines
   __HAL_RCC_GPIOB_CLK_ENABLE();
-  __HAL_RCC_GPIOC_CLK_ENABLE()  
-  
+
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -120,6 +144,18 @@ int main(void)
   
   GPIO_InitStruct.Pin = GPIO_PIN_14;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  
+  //Activa reloj puerto C
+   __HAL_RCC_GPIOC_CLK_ENABLE();  
+   
+   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+   GPIO_InitStruct.Pin = GPIO_PIN_13;
+   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+   
+   delay_LD1 = 1000; //1Hz en milisegundos
+   delay_LD2 = delay_LD1/2;
+   delay_LD3 = delay_LD1/4;
 
 #ifdef RTE_CMSIS_RTOS2
   /* Initialize CMSIS-RTOS2 */
@@ -135,12 +171,13 @@ int main(void)
   /* Infinite loop */
   while (1)
   {
-    uint32_t delay_LD1 = 1; //1Hz
     
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
     HAL_Delay(delay_LD1);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
+    HAL_Delay(delay_LD2);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
+    HAL_Delay(delay_LD3);
     
   }
 }
@@ -183,8 +220,8 @@ static void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 1;
-  RCC_OscInitStruct.PLL.PLLN = 24;
+  RCC_OscInitStruct.PLL.PLLM = 25; //1
+  RCC_OscInitStruct.PLL.PLLN = 336; //24
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 7;
   if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
