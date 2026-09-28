@@ -81,26 +81,28 @@ static void Error_Handler(void);
 /* Private functions ---------------------------------------------------------*/
 
 static GPIO_InitTypeDef GPIO_InitStruct;
-static uint32_t delay_LD1;
-static uint32_t delay_LD2;
-static uint32_t delay_LD3;
+volatile uint32_t delay_LD1;
 
 //Implementacion de interrupciones
 void EXTI15_10_IRQHandler(void){
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13); //Limpia flag de la interrupcion y llama a CallBack de Hal
 }
+
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
   
-  if(GPIO_Pin == GPIO_PIN_13){
-    if(delay_LD1 == 1000){
-      delay_LD1  = 500;
-    } else if (delay_LD1 == 500){
-      delay_LD1 = 250;
-    } else{
-        delay_LD1 = 1000;
+  
+  if(GPIO_Pin == GPIO_PIN_13){    //Calcula los medios periodos de LED1
+      
+      if(delay_LD1 == 500){
+        delay_LD1  = 250;
+        } else if (delay_LD1 == 250){
+             delay_LD1 = 125;
+               } else{
+                 delay_LD1 = 500;
+          }
     }
   }
-}
 /**
   * @brief  Main program
   * @param  None
@@ -151,9 +153,8 @@ int main(void)
    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
    
-   delay_LD1 = 1000; //1Hz en milisegundos
-   delay_LD2 = delay_LD1/2;
-   delay_LD3 = delay_LD1/4;
+   delay_LD1 = 500; //1Hz en milisegundos
+
 
 #ifdef RTE_CMSIS_RTOS2
   /* Initialize CMSIS-RTOS2 */
@@ -170,15 +171,20 @@ int main(void)
   while (1)
   {
     
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);  //LED1
+    HAL_Delay(delay_LD1);                   
+    
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);  //LED1
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);  //LED2
     HAL_Delay(delay_LD1);
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
-    HAL_Delay(delay_LD2);
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
-    HAL_Delay(delay_LD3);
-
-    delay_LD2 = delay_LD1/2;
-    delay_LD3 = delay_LD1/4;
+    
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);  //LED1
+    HAL_Delay(delay_LD1);
+    
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);  //LED1
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);  //LED2
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14); //LED3
+    HAL_Delay(delay_LD1);
     
   }
 }
