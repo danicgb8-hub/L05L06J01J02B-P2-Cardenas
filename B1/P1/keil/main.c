@@ -100,8 +100,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
         delay_LD1 = 1000;
     }
   }
-  delay_LD2 = delay_LD1/2;
-  delay_LD3 = delay_LD1/4;
 }
 /**
   * @brief  Main program
@@ -178,6 +176,9 @@ int main(void)
     HAL_Delay(delay_LD2);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
     HAL_Delay(delay_LD3);
+
+    delay_LD2 = delay_LD1/2;
+    delay_LD3 = delay_LD1/4;
     
   }
 }
@@ -220,8 +221,8 @@ static void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 25; //1
-  RCC_OscInitStruct.PLL.PLLN = 336; //24
+  RCC_OscInitStruct.PLL.PLLM = 4 ; //28
+  RCC_OscInitStruct.PLL.PLLN = 48; //48
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 7;
   if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -247,7 +248,7 @@ static void SystemClock_Config(void)
   if (HAL_GetREVID() == 0x1001)
   {
     /* Enable the Flash prefetch */
-    __HAL_FLASH_PREFETCH_BUFFER_ENABLE();
+   __HAL_FLASH_PREFETCH_BUFFER_ENABLE();
   }
 }
 
