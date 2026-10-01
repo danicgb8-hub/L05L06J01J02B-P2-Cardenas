@@ -126,26 +126,27 @@ int main(void)
   SystemCoreClockUpdate();
 
   /* Add your application code here*/
-  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+  
 
-  //Activa reloj del puerto B y configura pines
-  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE(); //--> Activa reloj puerto D
 
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct); //--> Configura pin 13 del puerto D para conectar a placa mbed
   
-  GPIO_InitStruct.Pin = GPIO_PIN_7;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin = GPIO_PIN_12;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct); //--> Configura pin 12 puerto D (placa mbed)
   
-  GPIO_InitStruct.Pin = GPIO_PIN_14;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin = GPIO_PIN_11;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct); //--> Configura pin 11 puerto D (placa mbed)
   
-  //Activa reloj puerto C
-   __HAL_RCC_GPIOC_CLK_ENABLE();  
+  //Activa reloj puerto C para poder realizar interrupciones
+   
+   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn); //--> Activa interrupciones pines 10 al 15
+   __HAL_RCC_GPIOC_CLK_ENABLE();       
    
    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
    GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -169,20 +170,21 @@ int main(void)
   /* Infinite loop */
   while (1)
   {
-    
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);  //LED1
+    //Paradeo de los leds placa mbed
+    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);  
     HAL_Delay(delay_LD1);                   
     
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);  //LED1
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);  //LED2
+    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);  
+    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_11);  
     HAL_Delay(delay_LD1);
     
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);  //LED1
+    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);   
+
     HAL_Delay(delay_LD1);
     
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);  //LED1
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);  //LED2
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14); //LED3
+    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);  
+    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_11);  
+    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);  
     HAL_Delay(delay_LD1);
     
   }
