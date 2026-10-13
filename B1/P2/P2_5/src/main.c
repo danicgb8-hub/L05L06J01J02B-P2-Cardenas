@@ -71,12 +71,14 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
   */
 
 /* Private typedef -----------------------------------------------------------*/
-static TIM_HandleTypeDef tim3;
+TIM_HandleTypeDef tim3;
 TIM_OC_InitTypeDef Config_tim3;
-static GPIO_InitTypeDef GPIO_PWM;
+GPIO_InitTypeDef GPIO_PWM;
+GPIO_InitTypeDef Pin_Pulsador;
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+double Duty_Cycle;
 /* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config(void);
 static void Error_Handler(void);
@@ -93,7 +95,7 @@ static void init_TIM3(void){
   HAL_TIM_PWM_Init(&tim3);
   
   Config_tim3.OCMode = TIM_OCMODE_PWM2;
-  Config_tim3.Pulse = 0.25*tim3.Init.Period;      //Ciclo de trabajo un 25% del periodo
+  Config_tim3.Pulse = Duty_Cycle*tim3.Init.Period;      //Ciclo de trabajo un 25% del periodo
   Config_tim3.OCNPolarity = TIM_OCPOLARITY_HIGH;
   Config_tim3.OCFastMode = TIM_OCFAST_DISABLE;
   HAL_TIM_PWM_ConfigChannel(&tim3, &Config_tim3, TIM_CHANNEL_1);
@@ -109,6 +111,20 @@ static void GPIO_Init(GPIO_InitTypeDef *gpio){
   
   HAL_GPIO_Init(GPIOB, gpio);
 
+}
+
+/* INTERRUPCION PULSADOR */
+void EXTI15_10_IRQHandler(void){
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+  if(GPIO_Pin == GPIO_PIN_13){
+      if(Duty_Cycle < 0.80){
+        Duty_Cycle += 0.20;
+        __HAL_TIM_SET_COMPARE(&tim3, TIM_CHANNEL_1, Duty_Cycle*tim3.Init.Period);
+      }
+  }
 }
 /**
   * @brief  Main program
@@ -134,12 +150,24 @@ int main(void)
   SystemCoreClockUpdate();
 
   /* Add your application code here*/
+  Duty_Cycle = 0.20;
+  
   __HAL_RCC_TIM3_CLK_ENABLE();
   init_TIM3();
   HAL_TIM_PWM_Start(&tim3, TIM_CHANNEL_1);
   
   __HAL_RCC_GPIOB_CLK_ENABLE();
   GPIO_Init(&GPIO_PWM);
+  
+  /* Confiracion Pulsacion */
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+  
+  __HAL_RCC_GPIOC_CLK_ENABLE();             //Habilitamos reloj del puerto donde esta el pulsador
+  
+  Pin_Pulsador.Mode = GPIO_MODE_IT_RISING;
+  Pin_Pulsador.Pin = GPIO_PIN_13;
+  Pin_Pulsador.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOC, &Pin_Pulsador);
   
 #ifdef RTE_CMSIS_RTOS2
   /* Initialize CMSIS-RTOS2 */
