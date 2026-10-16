@@ -394,6 +394,26 @@
               <FileType>1</FileType>
               <FilePath>..\src\Thread.c</FilePath>
             </File>
+            <File>
+              <FileName>ThLed2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\ThLed2.c</FilePath>
+            </File>
+            <File>
+              <FileName>ThLed2.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\ThLed2.h</FilePath>
+            </File>
+            <File>
+              <FileName>ThLed3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\ThLed3.c</FilePath>
+            </File>
+            <File>
+              <FileName>ThLed3.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\ThLed3.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -63,6 +63,8 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
 }
 #endif
 #include "Thread.h"
+#include "ThLed2.h"
+#include "ThLed3.h"
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
   */
@@ -120,6 +122,8 @@ int main(void)
   /* Create thread functions that start executing, 
   Example: osThreadNew(app_main, NULL, NULL); */
   Init_Thread();
+  Init_ThLed2();
+  Init_ThLed3();
   /* Start thread execution */
   osKernelStart();
 #endif
