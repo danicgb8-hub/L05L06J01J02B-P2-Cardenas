@@ -9,6 +9,7 @@
 osThreadId_t tid_ThLed3;                        // thread id
 int Init_ThLed3 (void);                         // Init_Thread function
 void ThLed3 (void *argument);                   // thread function
+extern osThreadId_t tid_ThLed2;                 // ID ThLed2
 
 GPIO_InitTypeDef led_ld3 = { 
         .Pin = GPIO_PIN_14,
@@ -43,8 +44,22 @@ int Init_ThLed3 (void) {
 void ThLed3 (void *argument) {
   mygpio_pin *gpio = (mygpio_pin *)argument;
   HAL_GPIO_Init(gpio->port, &(gpio->pin));
+  int8_t ciclos_LED3 = 0;
   while (1) {
-    HAL_GPIO_TogglePin(gpio->port, gpio->pin.Pin);
-    osDelay(gpio->delay_287);
-  }
+    
+    osThreadFlagsWait(0x0002U, osFlagsWaitAny, osWaitForever);
+    //Se realizan 30 ciclos del LED_3
+    for(int i = 0; i < 60; i++){
+      HAL_GPIO_TogglePin(gpio->port, gpio->pin.Pin);
+      if( ciclos_LED3 < 50 ){
+          ciclos_LED3++;
+        }else if (ciclos_LED3 == 50){
+          osThreadFlagsSet(tid_ThLed2,0x0001U);
+          ciclos_LED3++;
+        }
+      osDelay(gpio->delay_287);
+    }
+    //Se reinicia cuenta de ciclos del LED_3
+    ciclos_LED3 = 0;  
+    }
 }

@@ -122,6 +122,7 @@ int main(void)
   /* Create thread functions that start executing, 
   Example: osThreadNew(app_main, NULL, NULL); */
   Init_Thread();
+  
   Init_ThLed2();
   Init_ThLed3();
   /* Start thread execution */
