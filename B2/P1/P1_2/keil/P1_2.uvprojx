@@ -390,49 +390,19 @@
               <FilePath>..\src\main.c</FilePath>
             </File>
             <File>
-              <FileName>Th_Bottom.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\Th_Bottom.c</FilePath>
-            </File>
-            <File>
-              <FileName>Th_Led1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\Th_Led1.c</FilePath>
-            </File>
-            <File>
-              <FileName>Th_Led3.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\Th_Led3.c</FilePath>
-            </File>
-            <File>
-              <FileName>Th_Bottom.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\src\Th_Bottom.h</FilePath>
-            </File>
-            <File>
-              <FileName>Th_Led1.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\src\Th_Led1.h</FilePath>
-            </File>
-            <File>
-              <FileName>Th_Led3.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\src\Th_Led3.h</FilePath>
-            </File>
-            <File>
               <FileName>main.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\src\main.h</FilePath>
             </File>
             <File>
-              <FileName>Th_Timer.c</FileName>
+              <FileName>ThJoy.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\src\Th_Timer.c</FilePath>
+              <FilePath>..\src\ThJoy.c</FilePath>
             </File>
             <File>
-              <FileName>Th_Timer.h</FileName>
+              <FileName>ThJoy.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\src\Th_Timer.h</FilePath>
+              <FilePath>..\src\ThJoy.h</FilePath>
             </File>
           </Files>
         </Group>

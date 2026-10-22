@@ -62,10 +62,6 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
   return HAL_OK;
 }
 #endif
-#include "Th_Bottom.h"
-#include "Th_Led1.h"
-#include "Th_Led3.h"
-#include "Th_Timer.h"
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
   */
@@ -73,6 +69,8 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
 /** @addtogroup Templates
   * @{
   */
+
+#include "ThJoy.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -90,7 +88,7 @@ static void Error_Handler(void);
   */
 int main(void)
 {
-
+  
   /* STM32F4xx HAL library initialization:
        - Configure the Flash prefetch, Flash preread and Buffer caches
        - Systick timer is configured by default as source of time base, but user 
@@ -122,10 +120,10 @@ int main(void)
 
   /* Create thread functions that start executing, 
   Example: osThreadNew(app_main, NULL, NULL); */
-  Init_ThBottom();
-  Init_ThLed3();
-  Init_ThLed1();
-  Init_ThTimer();
+  
+  //HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+  Init_ThJoy();
+  
   /* Start thread execution */
   osKernelStart();
 #endif
