@@ -119,7 +119,7 @@ int main(void)
 
   /* Create thread functions that start executing, 
   Example: osThreadNew(app_main, NULL, NULL); */
-  Init_Thread();
+  Init_th_LCD();
   /* Start thread execution */
   osKernelStart();
 #endif

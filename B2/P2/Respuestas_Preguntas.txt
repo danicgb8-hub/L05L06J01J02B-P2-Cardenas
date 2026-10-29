@@ -1,0 +1,15 @@
+1. ¿Cuál es la máxima frecuencia que puede utilizarse en la señal de reloj del display? ¿Dónde está indicada esta información?
+
+	La máxima frecuencia a la que puede trabajar el display LCD son 20MHz. Esta información se encuentra en las diapositivas de la asignatura. También puede 	encontrarse en el siguiente pdf, pag 9: https://newhavendisplay.com/content/specs/NHD-C12832A1Z-FSW-FBW-3V3.pdf
+
+2. ¿Quién y cómo se genera la señal de CS para el display?
+
+	La genera el pin 14 del puerto D. La genera mediante un 1 o un 0.
+
+3. ¿Por qué se ha programado el modo CPOL1 y CPHA1? Justifíquelo con el cronograma del display disponible en la hoja de catálogo.
+	
+	Durante el periodo de tiempo que CS1 está a nivel alto, el LCD no está conectado y SCL está en "reposo" a nivel alto. Cuando CS1 = '0' empieza todo a 	funcionar y las acciones se realizan en flancos de bajada, que coincide con CPOL1. Dado la lectura que hace el periférico del dato es en el próximo flanco 	de subida del reloj, corresponde con CPHA1
+
+4. ¿Qué duración debe tener el pulso de RESET? Para responder a esta pregunta debe buscar la información en la hoja de catálogo del display incluido en la información técnica del fabricante.
+	
+	La duración mínima que tiene que tener el pulse del RESET es de 1us.

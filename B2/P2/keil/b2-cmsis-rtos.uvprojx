@@ -390,14 +390,22 @@
               <FilePath>..\src\main.c</FilePath>
             </File>
             <File>
-              <FileName>Thread.c</FileName>
+              <FileName>mod_LCD.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\src\Thread.c</FilePath>
+              <FilePath>..\src\mod_LCD.c</FilePath>
+            </File>
+            <File>
+              <FileName>mod_LCD.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\mod_LCD.h</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
           <GroupName>::CMSIS</GroupName>
+        </Group>
+        <Group>
+          <GroupName>::CMSIS Driver</GroupName>
         </Group>
         <Group>
           <GroupName>::Device</GroupName>
@@ -408,6 +416,12 @@
 
   <RTE>
     <apis>
+      <api Capiversion="2.3.0" Cclass="CMSIS Driver" Cgroup="SPI" exclusive="0">
+        <package name="CMSIS" schemaVersion="1.7.53" url="https://www.keil.com/pack/" vendor="ARM" version="6.3.0"/>
+        <targetInfos>
+          <targetInfo name="Target_1"/>
+        </targetInfos>
+      </api>
       <api Capiversion="1.0.1" Cclass="CMSIS" Cgroup="OS Tick" exclusive="1">
         <package name="CMSIS" schemaVersion="1.7.53" url="https://www.keil.com/pack/" vendor="ARM" version="6.3.0"/>
         <targetInfos>
@@ -440,8 +454,14 @@
           <targetInfo name="Target_1"/>
         </targetInfos>
       </component>
-      <component Capiversion="2.3.0" Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Library" Cvendor="ARM" Cversion="5.9.1" condition="RTX5" ymlID="CMSIS:RTOS2:Keil RTX5&amp;Library">
+      <component Capiversion="2.3.0" Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Source" Cvendor="ARM" Cversion="5.9.1" condition="RTX5" ymlID="CMSIS:RTOS2:Keil RTX5&amp;Source">
         <package name="CMSIS-RTX" schemaVersion="1.7.54" url="https://www.keil.com/pack/" vendor="ARM" version="5.9.1"/>
+        <targetInfos>
+          <targetInfo name="Target_1"/>
+        </targetInfos>
+      </component>
+      <component Capiversion="2.1" Cclass="CMSIS Driver" Cgroup="SPI" Cvendor="Keil" Cversion="2.18" condition="STM32F4 CMSIS_Driver SPI" ymlID="CMSIS Driver:SPI">
+        <package name="STM32F4xx_DFP" schemaVersion="1.7.2" url="https://www.keil.com/pack/" vendor="Keil" version="2.17.1"/>
         <targetInfos>
           <targetInfo name="Target_1"/>
         </targetInfos>
@@ -459,6 +479,12 @@
         </targetInfos>
       </component>
       <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Cortex" Cvendor="Keil" Cversion="1.8.1" condition="STM32F4 HAL" ymlID="Device:STM32Cube HAL:Cortex">
+        <package name="STM32F4xx_DFP" schemaVersion="1.7.2" url="https://www.keil.com/pack/" vendor="Keil" version="2.17.1"/>
+        <targetInfos>
+          <targetInfo name="Target_1"/>
+        </targetInfos>
+      </component>
+      <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA" Cvendor="Keil" Cversion="1.8.1" condition="STM32F4 HAL" ymlID="Device:STM32Cube HAL:DMA">
         <package name="STM32F4xx_DFP" schemaVersion="1.7.2" url="https://www.keil.com/pack/" vendor="Keil" version="2.17.1"/>
         <targetInfos>
           <targetInfo name="Target_1"/>
@@ -482,6 +508,12 @@
           <targetInfo name="Target_1"/>
         </targetInfos>
       </component>
+      <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SPI" Cvendor="Keil" Cversion="1.8.1" condition="STM32F4 HAL DMA" ymlID="Device:STM32Cube HAL:SPI">
+        <package name="STM32F4xx_DFP" schemaVersion="1.7.2" url="https://www.keil.com/pack/" vendor="Keil" version="2.17.1"/>
+        <targetInfos>
+          <targetInfo name="Target_1"/>
+        </targetInfos>
+      </component>
       <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="2.6.3" condition="STM32F4 CMSIS" ymlID="Device:Startup">
         <package name="STM32F4xx_DFP" schemaVersion="1.7.2" url="https://www.keil.com/pack/" vendor="Keil" version="2.17.1"/>
         <targetInfos>
@@ -492,7 +524,7 @@
     <files>
       <file attr="config" category="source" name="Config\RTX_Config.c" version="5.2.0">
         <instance index="0">RTE\CMSIS\RTX_Config.c</instance>
-        <component Capiversion="2.3.0" Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Library" Cvendor="ARM" Cversion="5.9.1" condition="RTX5"/>
+        <component Capiversion="2.3.0" Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Source" Cvendor="ARM" Cversion="5.9.1" condition="RTX5"/>
         <package name="CMSIS-RTX" schemaVersion="1.7.54" url="https://www.keil.com/pack/" vendor="ARM" version="5.9.1"/>
         <targetInfos>
           <targetInfo name="Target_1"/>
@@ -500,7 +532,7 @@
       </file>
       <file attr="config" category="header" name="Config\RTX_Config.h" version="5.6.1">
         <instance index="0">RTE\CMSIS\RTX_Config.h</instance>
-        <component Capiversion="2.3.0" Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Library" Cvendor="ARM" Cversion="5.9.1" condition="RTX5"/>
+        <component Capiversion="2.3.0" Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Source" Cvendor="ARM" Cversion="5.9.1" condition="RTX5"/>
         <package name="CMSIS-RTX" schemaVersion="1.7.54" url="https://www.keil.com/pack/" vendor="ARM" version="5.9.1"/>
         <targetInfos>
           <targetInfo name="Target_1"/>
@@ -540,5 +572,14 @@
       </file>
     </files>
   </RTE>
+
+  <LayerInfo>
+    <Layers>
+      <Layer>
+        <LayName>b2-cmsis-rtos</LayName>
+        <LayPrjMark>1</LayPrjMark>
+      </Layer>
+    </Layers>
+  </LayerInfo>
 
 </Project>
