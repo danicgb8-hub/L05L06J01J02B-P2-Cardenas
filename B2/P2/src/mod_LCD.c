@@ -68,20 +68,24 @@ void th_LCD(void* arg){
   
   LCD_reset();
   LCD_init();
-  for(int i = 0; i<8; i++){
-    buffer[i] = 0xFF;
-  }
-  LCD_update();
   
   while(1){
-  
+    osThreadFlagsWait(0x03U, osFlagsWaitAny, osWaitForever);
+    LCD_update();
   }
 }
 
 void th_LCD_test(void* arg){
   
   while(1){
-  
+    
+    osDelay(1000);
+    
+      buffer[0] = 0xff;
+  for(int i = 1; i < 7; i++){buffer[i] = 0x11;}
+  buffer[7] = 0xff;
+    
+    osThreadFlagsSet(th_LCD_test, 0x03U);
   
   }
 }
@@ -192,7 +196,7 @@ void LCD_update(void){
   int i ;
   LCD_wr_cmd (0x00); // 4 bits de la parte baja de la dirección a 0
   LCD_wr_cmd (0x10); // 4 bits de la parte alta de la dirección a 0
-  LCD_wr_cmd (0xB0); // Pá gina 0
+  LCD_wr_cmd (0xB0); // Página 0
   for (i =0; i <128; i++){
       LCD_wr_data ( buffer[i]) ;
    }
