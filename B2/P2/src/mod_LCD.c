@@ -10,6 +10,8 @@ osThreadId_t tid_th_LCD_test;                   // thread LCD_test
 void LCD_reset(void);
 void LCD_wr_data(unsigned char data);
 void LCD_wr_cmd(unsigned char data);
+void LCD_init(void);
+void LCD_update(void);
 
 // Funciones inicializacion de los thread
 int Init_th_LCD(void);
@@ -39,6 +41,8 @@ ARM_DRIVER_SPI* SPIdrv = &Driver_SPI1;
 //variables GPIO
 GPIO_InitTypeDef gpio;
 
+unsigned char buffer[512];
+
 int Init_th_LCD(void){
   
   const osThreadAttr_t nombre_LCD = { .name = "th_LCD" };
@@ -63,11 +67,15 @@ int Init_th_LCD_test(void){
 void th_LCD(void* arg){
   
   LCD_reset();
+  LCD_init();
+  for(int i = 0; i<8; i++){
+    buffer[i] = 0xFF;
+  }
+  LCD_update();
   
   while(1){
   
   }
-
 }
 
 void th_LCD_test(void* arg){
@@ -76,7 +84,6 @@ void th_LCD_test(void* arg){
   
   
   }
-  
 }
 
 
@@ -158,4 +165,53 @@ void LCD_wr_cmd(unsigned char data){
       /*CS = 1*/
       HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
     }
+}
+
+/*Inicializa al LCD*/
+void LCD_init(void){
+  
+  LCD_wr_cmd(0xAE); //Display off
+  LCD_wr_cmd(0xA2); //Fija la relacion tension de polarizacion a 1/9
+  LCD_wr_cmd(0xA0); //Direccionamiento de RAM es el normal
+  LCD_wr_cmd(0xC8); //scan en salidas COM es el normal
+  LCD_wr_cmd(0x22); //Fija relacion de resistencia internas a 2
+  LCD_wr_cmd(0x2F); //Power on
+  LCD_wr_cmd(0x40); //Display empieza en la linea 0 
+  LCD_wr_cmd(0xAF); //DISPLAY ON
+  LCD_wr_cmd(0x81); //Contraste
+  
+  LCD_wr_cmd(0x08); //Valor Contraste
+  
+  LCD_wr_cmd(0xA4); //Display all points normal
+  LCD_wr_cmd(0xA6); //LCD display normal
+}
+
+
+void LCD_update(void){
+  
+  int i ;
+  LCD_wr_cmd (0x00); // 4 bits de la parte baja de la dirección a 0
+  LCD_wr_cmd (0x10); // 4 bits de la parte alta de la dirección a 0
+  LCD_wr_cmd (0xB0); // Pá gina 0
+  for (i =0; i <128; i++){
+      LCD_wr_data ( buffer[i]) ;
+   }
+   LCD_wr_cmd (0x00); // 4 bits de la parte baja de la dirección a 0
+   LCD_wr_cmd (0x10); // 4 bits de la parte alta de la dirección a 0
+   LCD_wr_cmd (0xB1); // Pá gina 1
+   for (i =128; i <256; i++) {
+      LCD_wr_data ( buffer[i]) ;
+   }
+   LCD_wr_cmd (0x00);
+   LCD_wr_cmd (0x10);
+   LCD_wr_cmd (0xB2); //Pá gina 2
+   for (i =256; i <384; i++) {
+    LCD_wr_data ( buffer[i]) ;
+   }
+   LCD_wr_cmd (0x00);
+   LCD_wr_cmd (0x10);
+   LCD_wr_cmd (0xB3); // Pagina 3
+   for (i =384; i <512; i++) {
+   LCD_wr_data ( buffer[i]) ;
+   }
 }
