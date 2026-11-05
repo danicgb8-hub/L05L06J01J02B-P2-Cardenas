@@ -1,0 +1,21 @@
+Teniendo en cuenta la información existente en el fichero Arial12x12.h, ¿Cuántos bytes se
+utilizan para conformar un carácter en este tipo de letra?
+
+	Se utilizan 25 bytes para dibujar este tipo de letra, 24 para ver que pixeles encender y 1 para el ancho de la letra.
+
+¿En qué posición se ha escrito el carácter? Podría escribirse en otro lugar en el LCD, piense
+cómo sería el procedimiento.
+
+	El carácter se ha escrito en la esquina superior izquierda del LCD. Si, se podría escribir en otro lugar, pero únicamente si pertenece a la L1. Un 	procedimiento posible sería enviar varios espacios antes del símbolo 'H', estos cambiarían el valor de la variable poscionL1 y así al escribir 'H' 	aparecería más a la derecha.
+
+Utilizando este tipo de letra, ¿Cuántas líneas de texto se podrían visualizar en todo el
+LCD?
+
+	Dado que el LCD tiene un alto de 32 y está dividido en 4 páginas de 8 píxeles de alto cada unas. Nuestra primera línea usa 12 píxeles, 8 de la página 0 y 4 	de la página 1, como tiene que haber espacio entre línea y línea y la siguiente línea de texto también ocupará 12 píxeles, solo caben dos líneas de 12x12 en 	el LCD.
+
+
+En el fichero del tipo de letra, el primer byte de cada carácter, no contiene información del
+valor de los pixeles que constituyen la letra. Haga una rápida inspección de algunas líneas
+e identifique la utilidad de este primer dato.
+
+	El primer byte de cada carácter indica el ancho del símbolo, ya que no es igual de ancho la letra 'i' que la letra 'A', ocupan un espacio distinto. No es necesario reservar un espacio 12x12 para la letra 'i' que ocupa 2 de ancho según el fichero .h.
