@@ -13,7 +13,10 @@ void LCD_wr_data(unsigned char data);
 void LCD_wr_cmd(unsigned char data);
 void LCD_init(void);
 void LCD_update(void);
-void LCD_symbolTolocalBuffer_L1(uint8_t symbol);
+void LCD_symbolToLocalBuffer_L1(uint8_t symbol);
+void Escribe_L1(uint8_t *cadena);
+void LCD_symbolToLocalBuffer_L2(uint8_t symbol);
+void Escribe_L2(uint8_t *cadena);
 
 // Funciones inicializacion de los thread
 int Init_th_LCD(void);
@@ -70,20 +73,19 @@ void th_LCD(void* arg){
   
   LCD_reset();
   LCD_init();
-  
   while(1){
     osThreadFlagsWait(0x03U, osFlagsWaitAny, osWaitForever);
-    LCD_symbolTolocalBuffer_L1('H');
+    //LCD_symbolToLocalBuffer_L1('H');
+    Escribe_L1((uint8_t*)"&/=+.@");
     LCD_update();
   }
 }
 
 void th_LCD_test(void* arg){
   
-  osDelay(1000);
-  osThreadFlagsSet(th_LCD_test, 0x03U);
   while(1){
-    
+  osDelay(1000);
+  osThreadFlagsSet(tid_th_LCD, 0x03U);
   }
 }
 
@@ -217,8 +219,8 @@ void LCD_update(void){
    }
 }
 
-
-void LCD_symbolTolocalBuffer_L1(uint8_t symbol){
+/*Escribe un unico simbolo en L1 y desplaza el cursor para poder escribir el siguiente*/
+void LCD_symbolToLocalBuffer_L1(uint8_t symbol){
   /*Value1 --> Valor que se escribira en la pagina 0 del LCD*/
   /*Value2--> Valor que se escribe en las 4 primeras filas de la pagina 1*/
   /*Como value 2 es de la pagina 1, al incluir su valor en el buffer se le suma 128 (0 pagina)*/
@@ -233,13 +235,69 @@ void LCD_symbolTolocalBuffer_L1(uint8_t symbol){
   
   /*for de 12 iteraciones, el ancho maximo que puede tener una letra*/
   for(i = 0; i<12; i++){
-    value1 = Arial12x12[offset+i*2+1];
-    value2 = Arial12x12[offset+i*2+2];
+    value1 = Arial12x12[offset+i*2+1];  //Datos en posiciones impares (pag 0 )
+    value2 = Arial12x12[offset+i*2+2];  //Datos en posiciones pares (pag 1)
     
     /*Guardo los valores de pag0 y pag1 (4 primeras filas) en el buffer*/
-    buffer[i + positionL1] = value1;
-    buffer[i +128 + positionL1] = value2;
+    buffer[i + positionL1] = value1;        //Info para escribir en Pag0
+    buffer[i +128 + positionL1] = value2;   //Info para escribir en Pag1
   }
   /*Avanzo el cursor de la pagina 0*/
   positionL1 = positionL1 + Arial12x12[offset];
+  
+  
+  /******POSIBLE SOLUCION AL DESBORDAMIENTO DEL OFFSET***********/
+  
+  if(positionL1 >116){
+    positionL1 = 0;
+  }
+  
+  
+}
+
+/*Se recorre una cadena de caracteres y se van escribiendo en la L1*/
+void Escribe_L1(uint8_t *cadena){
+  
+  while(*cadena != '\0'){
+    LCD_symbolToLocalBuffer_L1(*cadena);
+    cadena++;
+  }
+}
+
+/*Escribe un simbolo en la L2, paginas 2 y 3*/
+void LCD_symbolToLocalBuffer_L2(uint8_t symbol){
+  
+  static uint16_t positionL2 = 0;
+  int i, value1, value2;
+  uint16_t offset = 0;
+  
+  /*Indica en que posicion empieza la info del simbolo a dibujar*/
+  offset = 25*(symbol - ' ');
+  
+  for(i = 0; i < 12; i++){
+    
+    value1 = Arial12x12[offset + i*2 +1]; //Posiciones impares de los bytes del caracter para pag 2
+    value2 = Arial12x12[offset + i*2 +2]; //Posiciones impares de los bytes del caracter para pag 3
+    
+    buffer[i + 256 + positionL2] = value1;
+    buffer[i + 384 + positionL2] = value2;
+  }
+  
+  /*Avanzo el cursor de la linea 2 el ancho del simbolo que he escrito*/
+  positionL2 += Arial12x12[offset];
+  
+  if(positionL2 > 116){
+    positionL2 = 0;
+  }
+}
+
+
+/*Escribe cadena de caracteres en la L2 del LCD*/
+void Escribe_L2(uint8_t *cadena){
+  
+  while(*cadena != '\0'){
+    LCD_symbolToLocalBuffer_L2(*cadena);
+    cadena++;
+  }
+  
 }
