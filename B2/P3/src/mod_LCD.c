@@ -76,7 +76,8 @@ void th_LCD(void* arg){
   while(1){
     osThreadFlagsWait(0x03U, osFlagsWaitAny, osWaitForever);
     //LCD_symbolToLocalBuffer_L1('H');
-    Escribe_L1((uint8_t*)"&/=+.@");
+    Escribe_L1((uint8_t*)"Hola");
+    Escribe_L2((uint8_t*)"Hola");
     LCD_update();
   }
 }
@@ -248,7 +249,7 @@ void LCD_symbolToLocalBuffer_L1(uint8_t symbol){
   
   /******POSIBLE SOLUCION AL DESBORDAMIENTO DEL OFFSET***********/
   
-  if(positionL1 >116){
+  if(positionL1 > 116){
     positionL1 = 0;
   }
   
