@@ -48,6 +48,8 @@ ARM_DRIVER_SPI* SPIdrv = &Driver_SPI1;
 GPIO_InitTypeDef gpio;
 
 //Variables LCD
+static uint16_t positionL1 = 0;
+static uint16_t positionL2 = 0;
 unsigned char buffer[512];
 typedef struct{
   uint8_t Buf[40];
@@ -96,21 +98,23 @@ void th_LCD(void* arg){
 }
 
 void th_LCD_test(void* arg){
-  MSGQUEUE_LCD_t dato_cola;
+    uint32_t valor_1 = 1234;
+    float valor_2 = 3.14159;
+    MSGQUEUE_LCD_t msg;
   
   while(1){
-      dato_cola = (MSGQUEUE_LCD_t){.Buf = "Pepe", .linea = 1};
-      osMessageQueuePut(id_cola, &dato_cola, 0U, 10U);
-      osDelay(1000);
+    
+    snprintf((char*)msg.Buf, sizeof(MSGQUEUE_LCD_t), "Prueba valor1: %d",valor_1);
+    msg.linea = 1;
+    osMessageQueuePut(id_cola, &msg, NULL, osWaitForever);
+    
+    osDelay(500);
+    
+    snprintf((char*)msg.Buf, sizeof(MSGQUEUE_LCD_t), "Prueba valor2: %0.5f",valor_2);
+    msg.linea = 2;
+    osMessageQueuePut(id_cola, &msg, NULL, osWaitForever);
       
-      dato_cola = (MSGQUEUE_LCD_t){.Buf = "Ana", .linea = 2};
-      osMessageQueuePut(id_cola, &dato_cola, 0U, 10U);
-      osDelay(1000);
-      
-      dato_cola = (MSGQUEUE_LCD_t){.Buf = " @#/", .linea = 1};
-      osMessageQueuePut(id_cola, &dato_cola, 0U, 10U);
-      osDelay(1000);
-      
+    osDelay(500);
   }
 }
 
@@ -250,8 +254,6 @@ void LCD_symbolToLocalBuffer_L1(uint8_t symbol){
   /*Value2--> Valor que se escribe en las 4 primeras filas de la pagina 1*/
   /*Como value 2 es de la pagina 1, al incluir su valor en el buffer se le suma 128 (0 pagina)*/
   
-  
-  static uint16_t positionL1 = 0;
   uint8_t i, value1, value2;
   uint16_t offset = 0;
   
@@ -271,28 +273,27 @@ void LCD_symbolToLocalBuffer_L1(uint8_t symbol){
   positionL1 = positionL1 + Arial12x12[offset];
   
   
-  /******POSIBLE SOLUCION AL DESBORDAMIENTO DEL OFFSET***********/
-  
-  if(positionL1 > 116){
-    positionL1 = 0;
-  }
-  
   
 }
 
 /*Se recorre una cadena de caracteres y se van escribiendo en la L1*/
 void Escribe_L1(uint8_t *cadena){
   
+  for(int i = 0; i < 256; i++){
+    buffer[i] = 0x00;
+  }
+  
   while(*cadena != '\0'){
     LCD_symbolToLocalBuffer_L1(*cadena);
     cadena++;
   }
+  
+  positionL1 = 0;
 }
 
 /*Escribe un simbolo en la L2, paginas 2 y 3*/
 void LCD_symbolToLocalBuffer_L2(uint8_t symbol){
   
-  static uint16_t positionL2 = 0;
   int i, value1, value2;
   uint16_t offset = 0;
   
@@ -311,18 +312,22 @@ void LCD_symbolToLocalBuffer_L2(uint8_t symbol){
   /*Avanzo el cursor de la linea 2 el ancho del simbolo que he escrito*/
   positionL2 += Arial12x12[offset];
   
-  if(positionL2 > 116){
-    positionL2 = 0;
-  }
 }
 
 
 /*Escribe cadena de caracteres en la L2 del LCD*/
 void Escribe_L2(uint8_t *cadena){
   
+  
+  for(int i = 256; i < 512; i++){
+    buffer[i] = 0x00;
+  }
+  
   while(*cadena != '\0'){
     LCD_symbolToLocalBuffer_L2(*cadena);
     cadena++;
   }
+  
+  positionL2 = 0;
   
 }
