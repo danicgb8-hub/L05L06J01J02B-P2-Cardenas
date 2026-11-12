@@ -1,8 +1,9 @@
-#include "cmsis_os2.h"                          // CMSIS RTOS header file
+//#include "cmsis_os2.h"                          // CMSIS RTOS header file
 #include "stm32f4xx_hal.h"
 #include <stdlib.h> 
 #include <Driver_SPI.h>
 #include "Arial12x12.h"
+#include "mod_LCD.h"
 
 osThreadId_t tid_th_LCD;                        // thread LCD
 osThreadId_t tid_th_LCD_test;                   // thread LCD_test
@@ -46,12 +47,22 @@ ARM_DRIVER_SPI* SPIdrv = &Driver_SPI1;
 //variables GPIO
 GPIO_InitTypeDef gpio;
 
+//Variables LCD
 unsigned char buffer[512];
+typedef struct{
+  uint8_t Buf[40];
+  uint8_t linea;
+}MSGQUEUE_LCD_t;
+
+//Creacion de la cola compartida
+osMessageQueueId_t id_cola;
 
 int Init_th_LCD(void){
   
   const osThreadAttr_t nombre_LCD = { .name = "th_LCD" };
   tid_th_LCD = osThreadNew(th_LCD,NULL, &nombre_LCD);
+  //Inicializamos la cola
+  id_cola = osMessageQueueNew(10, sizeof(MSGQUEUE_LCD_t), NULL);
   if( tid_th_LCD == NULL){
       return(-1);
     }
@@ -70,23 +81,36 @@ int Init_th_LCD_test(void){
 }
 
 void th_LCD(void* arg){
-  
+  MSGQUEUE_LCD_t dato;
   LCD_reset();
   LCD_init();
   while(1){
-    osThreadFlagsWait(0x03U, osFlagsWaitAny, osWaitForever);
-    //LCD_symbolToLocalBuffer_L1('H');
-    Escribe_L1((uint8_t*)"Hola");
-    Escribe_L2((uint8_t*)"Hola");
+    osMessageQueueGet(id_cola, &dato, NULL, osWaitForever);
+    if(dato.linea == 1){
+      Escribe_L1((uint8_t*)dato.Buf);
+    } else if(dato.linea == 2){
+      Escribe_L2((uint8_t*)dato.Buf);
+    }
     LCD_update();
   }
 }
 
 void th_LCD_test(void* arg){
+  MSGQUEUE_LCD_t dato_cola;
   
   while(1){
-  osDelay(1000);
-  osThreadFlagsSet(tid_th_LCD, 0x03U);
+      dato_cola = (MSGQUEUE_LCD_t){.Buf = "Pepe", .linea = 1};
+      osMessageQueuePut(id_cola, &dato_cola, 0U, 10U);
+      osDelay(1000);
+      
+      dato_cola = (MSGQUEUE_LCD_t){.Buf = "Ana", .linea = 2};
+      osMessageQueuePut(id_cola, &dato_cola, 0U, 10U);
+      osDelay(1000);
+      
+      dato_cola = (MSGQUEUE_LCD_t){.Buf = " @#/", .linea = 1};
+      osMessageQueuePut(id_cola, &dato_cola, 0U, 10U);
+      osDelay(1000);
+      
   }
 }
 
